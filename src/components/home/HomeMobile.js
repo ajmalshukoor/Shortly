@@ -1,17 +1,24 @@
+import {useState} from 'react'
 import './homemobile.css'
 
 const HomeMobile = () => {
+  const [clicked, setClicked] = useState(false)
+
+  const handleClick = () => {
+    setClicked(!clicked)
+  }
+
   return (
     <div className="home mobile">
         <div className="firstView">
         <div className="topbar">
           <div className="topbarContainer">
             <img src={`${process.env.PUBLIC_URL}/images/logo.svg`} alt="Shortly logo" className="topbarLogo mobile"></img>
-            <ion-icon name="reorder-three-outline" className="topbarNavIcon"></ion-icon>
+            <span className="topbarNavIcon" onClick={handleClick}>{!clicked?<ion-icon name="reorder-three-outline"/>:<ion-icon name="close-outline"/>}</span>
           </div>
         </div>
         <div className="section1">
-        <div className="topbarNavToggle">
+        <div className={`topbarNavToggle ${!clicked && "hidden"}`}>
               <span>Features</span>
               <span>Resources</span>
               <span>Prices</span>
