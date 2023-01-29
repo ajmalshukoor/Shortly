@@ -1,4 +1,4 @@
-import {useState, useReducer, useEffect} from 'react'
+import {useState, useReducer} from 'react'
 import {API_URL} from  '../../variables';
 import './homemobile.css'
 
