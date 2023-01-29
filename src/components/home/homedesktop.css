@@ -11,7 +11,7 @@
 
 @media screen and (min-width: 1100px) {
 
-    .home.mobile{
+    .home.mobile, .hidden{
         display: none;
     }
     
@@ -256,7 +256,7 @@
     }
 
     .section3Overview{
-        margin-top: 50px;
+        margin-top: 80px;
         text-align: center;
         width: 500px;
     }

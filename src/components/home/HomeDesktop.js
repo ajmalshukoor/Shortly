@@ -1,6 +1,60 @@
+import {useState, useReducer} from 'react'
+import {API_URL} from  '../../variables';
 import './homedesktop.css'
 
 const HomeDesktop = () => {
+  const [urlValue, setUrlValue] = useState('')
+  const [shortened, setShortened] = useState({})
+  const initialState = {copy1: false, copy2: false, copy3: false}
+
+  const reducer = (state, action) => {
+    switch(action.type){
+      case 'COPY1':
+        return {copy1: true, copy2: false, copy3: false}
+      case 'COPY2':
+        return {copy1: false, copy2: true, copy3: false}
+      case 'COPY3':
+        return {copy1: false, copy2: false, copy3: true}
+      case 'DEFULT':
+        return initialState
+    }
+  }
+  const [copyClick, dispatch] = useReducer(reducer, initialState)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    
+    const postLink = await fetch(API_URL+'shorten?url='+urlValue, {
+      method: 'POST',
+    })
+    const postLinkResponse = await postLink.json()
+    const {result} = postLinkResponse
+    setShortened(result)
+    setUrlValue('')
+    dispatch({type: 'DEFULT'})
+  }
+
+  const handleCopyClick = async (e) => {
+    const element = e.target
+    const dataValue = element.dataset.value
+    console.log(dataValue)
+    if(element.id === 'COPY1'){
+      dispatch({type: 'COPY1'})
+    }
+    if(element.id === 'COPY2'){
+      dispatch({type: 'COPY2'})
+    }
+    if(element.id === 'COPY3'){
+      dispatch({type: 'COPY3'})
+    }
+
+    try{
+      await navigator.clipboard.writeText(dataValue);
+    }
+    catch(error){
+      console.error('Failed to copy text:', error)
+    }
+  }
   return (
     <div className="home desktop">
         <div className="firstView">
@@ -29,9 +83,15 @@ const HomeDesktop = () => {
         <div className="section2">
             <div className="section2Container">
               <img src={`${process.env.PUBLIC_URL}/images/bg-shorten-desktop.svg`} className="section2Img"></img>
-              <form className="section2Form">
+              <form className="section2Form" onSubmit={handleSubmit}>
                 <div className="section2FormInput">
-                  <input type="url" className="section2Input" placeholder="Shorten a link here..."/>
+                  <input
+                   type="url" 
+                   className="section2Input"
+                   placeholder="Shorten a link here..." 
+                   onChange={(e) => setUrlValue(e.target.value)} 
+                   value={urlValue} 
+                  />
                   <button className="section2Btn">Shorten It!</button>
                 </div>
                 <p className="section2Err">Please add a link</p>
@@ -40,28 +100,46 @@ const HomeDesktop = () => {
         </div>
         </div>
         <div className="section3">
-            <div className="section3Container">
+            <div className={`section3Container ${shortened?.full_short_link ? '' : 'hidden'}`}>
             <div className="section3List">
-              <ul>
+            <ul>
                 <li className="section3EachList">
-                  <p className="section3Link">https://www.frontentmentor.io</p>
+                  <p className="section3Link">{shortened?.full_short_link}</p>
                   <div className="section3Span">
-                    <span className="section3ShortenedLink">https://rel.ink/k4lKyk</span>
-                    <span className="section3CopyBtn">Copy</span>
+                    <span className="section3ShortenedLink">{shortened?.short_link}</span>
+                    <span 
+                     className={`section3CopyBtn ${copyClick.copy1 ? 'clicked' : ''}`}
+                     data-value={shortened?.short_link}
+                     id='COPY1'
+                     onClick={handleCopyClick}>
+                      {copyClick.copy1 ? 'Copied!' : 'Copy'}
+                    </span>
                   </div>
                 </li>
                 <li className="section3EachList">
-                  <p className="section3Link">https://www.frontentmentor.io</p>
+                  <p className="section3Link">{shortened?.full_short_link2}</p>
                   <div className="section3Span">
-                    <span className="section3ShortenedLink">https://rel.ink/k4lKyk</span>
-                    <span className="section3CopyBtn">Copy</span>
+                    <span className="section3ShortenedLink">{shortened?.short_link2}</span>
+                    <span 
+                     className={`section3CopyBtn ${copyClick.copy2 ? 'clicked' : ''}`} 
+                     data-value={shortened?.short_link2} 
+                     id='COPY2'
+                     onClick={handleCopyClick}>
+                     {copyClick.copy2 ? 'Copied!' : 'Copy'}
+                    </span>
                   </div>                
                   </li>
                 <li className="section3EachList">
-                  <p className="section3Link">https://www.frontentmentor.io</p>
+                  <p className="section3Link">{shortened?.full_short_link3}</p>
                   <div className="section3Span">
-                    <span className="section3ShortenedLink">https://rel.ink/k4lKyk</span>
-                    <span className="section3CopyBtn">Copy</span>
+                    <span className="section3ShortenedLink">{shortened?.short_link3}</span>
+                    <span 
+                     className={`section3CopyBtn ${copyClick.copy3 ? 'clicked' : ''}`} 
+                     data-value={shortened?.short_link3} 
+                     id='COPY3'
+                     onClick={handleCopyClick}>
+                    {copyClick.copy3 ? 'Copied!' : 'Copy'}
+                   </span>
                   </div>
                   </li>
               </ul>
